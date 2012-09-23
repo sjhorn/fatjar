@@ -1,0 +1,7 @@
+template: Hello, %s!
+
+defaultName: Stranger
+
+http:
+    contextParameters:
+        contextConfigLocation: WEB-INF/applicationContext.xml

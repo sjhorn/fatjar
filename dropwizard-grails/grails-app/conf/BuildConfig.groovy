@@ -38,15 +38,15 @@ grails.project.dependency.resolution = {
 
         // runtime 'mysql:mysql-connector-java:5.1.20'
 
-        compile("com.yammer.dropwizard:dropwizard-core:0.5.1") {
+        compile("com.yammer.dropwizard:dropwizard-core:0.5.1_wotif") {
             excludes 'javax.servlet'
         }
     }
 
     plugins {
         runtime ":hibernate:$grailsVersion"
-        runtime ":jquery:1.8.0"
-        runtime ":resources:1.1.6"
+        //runtime ":jquery:1.8.0"
+        //runtime ":resources:1.1.6"
 
         // Uncomment these (or add new ones) to enable additional resources capabilities
         //runtime ":zipped-resources:1.0"
@@ -57,8 +57,7 @@ grails.project.dependency.resolution = {
             excludes "log4j",  "slf4j-log4j12"
         }
 
-        runtime ":database-migration:1.1"
-
-        compile ':cache:1.0.0'
+        //runtime ":database-migration:1.1"
+        //compile ':cache:1.0.0'
     }
 }

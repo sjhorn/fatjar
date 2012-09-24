@@ -62,8 +62,7 @@ public class Go extends Service<GoConfiguration> {
                 put("targetFilterLifecycle", "true"); 
             }});
             
-        //environment.addServletListeners(new GrailsContextLoaderListener());
-        environment.addServletListeners(new SimpleEventListener());
+        environment.addServletListeners(new GrailsContextLoaderListener());
         
         environment.addServlet(GrailsDispatcherServlet.class, "*.dispatch");
         environment.addServlet(GroovyPagesServlet.class, "*.gsp");

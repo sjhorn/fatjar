@@ -41,6 +41,7 @@ grails.project.dependency.resolution = {
         compile("com.yammer.dropwizard:dropwizard-core:0.5.1_wotif") {
             excludes 'javax.servlet'
         }
+        
     }
 
     plugins {

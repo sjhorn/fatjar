@@ -101,7 +101,7 @@ class FatJar {
     
     static main(args) {
         try {
-            new File("/Users/shorn/dev/dropwtest/dropwizard-grails/target/dropwizard-grails-0.1.war").withInputStream { InputStream is ->
+            new File("/Users/shorn/dev/fatjar/dropwizard-grails/target/dropwizard-grails-0.1.war").withInputStream { InputStream is ->
                 JarInputStream jis = new JarInputStream(is)
                 
                 Manifest manifest = new Manifest()
@@ -113,7 +113,7 @@ class FatJar {
                     mainAttributes.putValue(k, v)
                 }
                 
-                new File("test.jar").withOutputStream { OutputStream os ->
+                new File("fat.jar").withOutputStream { OutputStream os ->
                     JarOutputStream jos = new JarOutputStream(os, manifest)
                     
                     FatJar fatjar = new FatJar()

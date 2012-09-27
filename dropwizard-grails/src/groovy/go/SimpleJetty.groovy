@@ -98,7 +98,7 @@ class SimpleJetty extends HttpServlet {
             
             
             Server server = new Server(8080)
-            boolean doit = true
+            boolean doit = false
             Handler webapp
             if(doit == true) {
                 //WebXmlConfiguration config
@@ -108,35 +108,39 @@ class SimpleJetty extends HttpServlet {
                 webapp.setWar("./target/out")
             } else {
                 
-                Thread current_thread = Thread.currentThread()
-                //ClassLoader old_classloader = current_thread.getContextClassLoader()
-                WebAppClassLoader wacl = new WebAppClassLoader(null, new SimpleContext())
-                Resource war = Resource.newResource(new File("target/out").absolutePath)
-                wacl.addClassPath(war)
-                
-                // Add war classpath stuff
-                Resource web_inf = war.addPath("WEB-INF")
-                if (web_inf != null && web_inf.isDirectory()) {
-                    println "here"
-                    // Look for classes directory
-                    Resource classes= web_inf.addPath("classes/")
-                    if (classes.exists())
-                        wacl.addClassPath(classes);
-        
-                    // Look for jars
-                    //Resource lib = web_inf.addPath("lib/")
-                    //if (lib.exists() || lib.isDirectory())
-                    //    wacl.addJars(lib)
+                def woot = {
+                    Thread current_thread = Thread.currentThread()
+                    //ClassLoader old_classloader = current_thread.getContextClassLoader()
+                    WebAppClassLoader wacl = new WebAppClassLoader(null, new SimpleContext())
+                    Resource war = Resource.newResource(new File("target/out").absolutePath)
+                    wacl.addClassPath(war)
+                    
+                    // Add war classpath stuff
+                    Resource web_inf = war.addPath("WEB-INF")
+                    if (web_inf != null && web_inf.isDirectory()) {
+                        
+                        // Look for classes directory
+                        Resource classes= web_inf.addPath("classes/")
+                        if (classes.exists())
+                            wacl.addClassPath(classes);
+            
+                        // Look for jars
+                        //Resource lib = web_inf.addPath("lib/")
+                        //if (lib.exists() || lib.isDirectory())
+                        //    wacl.addJars(lib)
+                    }
+                    current_thread.setContextClassLoader(wacl)
                 }
-                
-                
-                
-                current_thread.setContextClassLoader(wacl)
             
                 //ServletContextHandler 
                 webapp = new ServletContextHandler(ServletContextHandler.SESSIONS | ServletContextHandler.SECURITY)
                 webapp.setErrorHandler(new ErrorPageErrorHandler())
                 webapp.setContextPath("/")
+                
+                
+                addServlet(webapp, "default", "org.eclipse.jetty.servlet.DefaultServlet")
+                addServletMapping(webapp, "default", "/")
+                
                 
                 webapp.setBaseResource(Resource.newResource(new File("target/out").absolutePath))
                 //webapp.setResourceBase(Resource.newResource("./target/out").getFile().getAbsolutePath())
@@ -150,6 +154,7 @@ class SimpleJetty extends HttpServlet {
                     targetBeanName : "characterEncodingFilter",
                     targetFilterLifecycle : "true"
                 ])
+                
                 addFilter(webapp, "urlMapping", "org.codehaus.groovy.grails.web.mapping.filter.UrlMappingsFilter")
                 addFilter(webapp, "hiddenHttpMethod", "org.codehaus.groovy.grails.web.filters.HiddenHttpMethodFilter")
                 addFilter(webapp, "grailsWebRequest", "org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequestFilter")

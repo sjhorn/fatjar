@@ -11,11 +11,13 @@ import org.codehaus.groovy.grails.web.servlet.ErrorHandlingServlet;
 import org.codehaus.groovy.grails.web.servlet.GrailsDispatcherServlet;
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequestFilter;
 import org.codehaus.groovy.grails.web.sitemesh.GrailsPageFilter;
-import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
+import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.config.Environment;
+import com.yammer.dropwizard.jersey.DropwizardResourceConfig;
 
 public class Go extends Service<GoConfiguration> {
     public static void main(String[] args) throws Exception {
@@ -26,15 +28,15 @@ public class Go extends Service<GoConfiguration> {
         super("go");
     }
 
+//    public ServletContainer getJerseyContainer(DropwizardResourceConfig resourceConfig, GoConfiguration serviceConfig) {
+//        return null;
+//    }
+    
     @Override
     protected void initialize(GoConfiguration configuration,
                               Environment environment) throws ClassNotFoundException {
         
-        
-        environment
-            .addFilter(GrailsPageFilter.class, "/*")
-            .setName("sitemesh");
-        
+        environment.addServlet(DefaultServlet.class, "/");
         environment
             .addFilter(DelegatingFilterProxy.class, "/*")
             .setName("charEncodingFilter")
@@ -44,29 +46,30 @@ public class Go extends Service<GoConfiguration> {
             }});
         
         environment
-            .addFilter(UrlMappingsFilter.class, "/*")
-            .setName("urlMapping");
-        
-        environment
             .addFilter(HiddenHttpMethodFilter.class, "/*")
             .setName("hiddenHttpMethod");
-
+        
         environment
             .addFilter(GrailsWebRequestFilter.class, "/*")
             .setName("grailsWebRequest");
         
         environment
-            .addFilter(DelegatingFilterProxy.class, "/*")
-            .setName("grailsCacheFilter")
-            .addInitParams(new HashMap<String,String>() {{
-                put("targetFilterLifecycle", "true"); 
-            }});
+            .addFilter(GrailsPageFilter.class, "/*")
+            .setName("sitemesh");
+        
+        environment
+            .addFilter(UrlMappingsFilter.class, "/*")
+            .setName("urlMapping");
+        
             
         environment.addServletListeners(new GrailsContextLoaderListener());
         
-        environment.addServlet(GrailsDispatcherServlet.class, "*.dispatch");
         environment.addServlet(GroovyPagesServlet.class, "*.gsp");
         environment.addServlet(ErrorHandlingServlet.class, "/grails-errorhandler");
+        environment.addServlet(GrailsDispatcherServlet.class, "*.dispatch");
+        
+        
+        environment.addResource(new HelloWorldResource());
             
     }
 }

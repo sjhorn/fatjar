@@ -1,0 +1,49 @@
+Manifest-Version: 1.0
+Rsrc-Class-Path: antlr-2.7.7.jar aopalliance-1.0.jar asm-3.1.jar aspec
+ tjrt-1.6.10.jar aspectjweaver-1.6.10.jar cglib-2.2.jar commons-beanut
+ ils-1.8.3.jar commons-cli-1.2.jar commons-codec-1.5.jar commons-colle
+ ctions-3.2.1.jar commons-dbcp-1.4.jar commons-el-1.0.jar commons-file
+ upload-1.2.2.jar commons-io-2.1.jar commons-lang-2.6.jar commons-pool
+ -1.5.6.jar commons-validator-1.3.1.jar concurrentlinkedhashmap-lru-1.
+ 2_jdk5.jar dom4j-1.6.1.jar dropwizard-core-0.5.1.jar dropwizard-core-
+ 0.5.1_wotif.jar ehcache-core-2.4.6.jar grails-bootstrap-2.1.1.jar gra
+ ils-core-2.1.1.jar grails-crud-2.1.1.jar grails-datastore-core-1.1.0.
+ RELEASE.jar grails-datastore-gorm-1.1.0.RELEASE.jar grails-datastore-
+ simple-1.1.0.RELEASE.jar grails-hibernate-2.1.1.jar grails-logging-2.
+ 1.1.jar grails-plugin-async-2.1.1.jar grails-plugin-codecs-2.1.1.jar 
+ grails-plugin-controllers-2.1.1.jar grails-plugin-converters-2.1.1.ja
+ r grails-plugin-datasource-2.1.1.jar grails-plugin-domain-class-2.1.1
+ .jar grails-plugin-filters-2.1.1.jar grails-plugin-gsp-2.1.1.jar grai
+ ls-plugin-i18n-2.1.1.jar grails-plugin-mimetypes-2.1.1.jar grails-plu
+ gin-scaffolding-2.1.1.jar grails-plugin-services-2.1.1.jar grails-plu
+ gin-servlets-2.1.1.jar grails-plugin-url-mappings-2.1.1.jar grails-pl
+ ugin-validation-2.1.1.jar grails-resources-2.1.1.jar grails-spring-2.
+ 1.1.jar grails-web-2.1.1.jar groovy-all-1.8.8.jar guava-13.0.jar h2-1
+ .3.164.jar hibernate-commons-annotations-3.2.0.Final.jar hibernate-co
+ re-3.6.10.Final.jar hibernate-ehcache-3.6.10.Final.jar hibernate-jpa-
+ 2.0-api-1.0.1.Final.jar hibernate-validator-4.3.0.Final.jar jackson-c
+ ore-asl-1.9.9.jar jackson-datatype-guava-1.9.1.jar jackson-jaxrs-1.9.
+ 9.jar jackson-mapper-asl-1.9.9.jar javassist-3.16.1-GA.jar javax.serv
+ let-3.0.0.v201112011016.jar jboss-logging-3.1.0.CR2.jar jcl-over-slf4
+ j-1.6.2.jar jersey-core-1.13.jar jersey-server-1.13.jar jersey-servle
+ t-1.13.jar jetty-continuation-8.1.5.v20120716.jar jetty-http-8.1.5.v2
+ 0120716.jar jetty-io-8.1.5.v20120716.jar jetty-security-8.1.5.v201207
+ 16.jar jetty-server-8.1.5.v20120716.jar jetty-servlet-8.1.5.v20120716
+ .jar jetty-util-8.1.5.v20120716.jar jetty-webapp-8.1.5.v20120716.jar 
+ jsr305-2.0.1.jar jstl-1.1.2.jar jta-1.1.jar jul-to-slf4j-1.6.6.jar lo
+ g4j-over-slf4j-1.6.6.jar logback-classic-1.0.6.jar logback-core-1.0.6
+ .jar metrics-annotation-2.1.3.jar metrics-core-2.1.3.jar metrics-jers
+ ey-2.1.3.jar metrics-jetty-2.1.3.jar metrics-logback-2.1.3.jar metric
+ s-servlet-2.1.3.jar oro-2.0.8.jar sitemesh-2.4.jar slf4j-api-1.6.6.ja
+ r snakeyaml-1.10.jar spring-aop-3.1.2.RELEASE.jar spring-asm-3.1.2.RE
+ LEASE.jar spring-aspects-3.1.2.RELEASE.jar spring-beans-3.1.2.RELEASE
+ .jar spring-context-3.1.2.RELEASE.jar spring-context-support-3.1.2.RE
+ LEASE.jar spring-core-3.1.2.RELEASE.jar spring-expression-3.1.2.RELEA
+ SE.jar spring-jdbc-3.1.2.RELEASE.jar spring-jms-3.1.2.RELEASE.jar spr
+ ing-orm-3.1.2.RELEASE.jar spring-tx-3.1.2.RELEASE.jar spring-web-3.1.
+ 2.RELEASE.jar spring-webmvc-3.1.2.RELEASE.jar validation-api-1.0.0.GA
+ .jar xpp3_min-1.1.4c.jar . /
+Grails-Version: 2.1.1
+Rsrc-Main-Class: go.Go
+Main-Class: org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader
+

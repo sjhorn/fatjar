@@ -1,7 +1,10 @@
 package go
 
+import java.security.ProtectionDomain
+
 import javax.servlet.DispatcherType
 import javax.servlet.http.HttpServlet
+import javax.tools.JavaFileManager.Location
 
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.eclipse.jetty.server.Handler
@@ -141,8 +144,12 @@ class SimpleJetty extends HttpServlet {
                 addServlet(webapp, "default", "org.eclipse.jetty.servlet.DefaultServlet")
                 addServletMapping(webapp, "default", "/")
                 
+                ProtectionDomain domain = Test.class.getProtectionDomain();
+                URL location = domain.getCodeSource().getLocation();
                 
-                webapp.setBaseResource(Resource.newResource(new File("target/out").absolutePath))
+                webapp.setResourceBase(Location.toString())
+                //webapp.setResourceBase("rsrc:WEB-INF")
+                //webapp.setBaseResource(Resource.newResource(new File("target/out").absolutePath))
                 //webapp.setResourceBase(Resource.newResource("./target/out").getFile().getAbsolutePath())
                 //webapp.setBaseResource(Resource.newResource("target/out"))
                 

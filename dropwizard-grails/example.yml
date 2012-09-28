@@ -4,3 +4,5 @@ defaultName: Stranger
 
 http:
     rootPath: /service/*
+    contextParameters:
+        contextConfigLocation: WEB-INF/applicationContext.xml

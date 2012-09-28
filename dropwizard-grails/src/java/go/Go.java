@@ -14,10 +14,8 @@ import org.codehaus.groovy.grails.web.sitemesh.GrailsPageFilter;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
-import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.config.Environment;
-import com.yammer.dropwizard.jersey.DropwizardResourceConfig;
 
 public class Go extends Service<GoConfiguration> {
     public static void main(String[] args) throws Exception {
@@ -61,7 +59,7 @@ public class Go extends Service<GoConfiguration> {
             .addFilter(UrlMappingsFilter.class, "/*")
             .setName("urlMapping");
         
-            
+        environment.addServletListeners(new SimpleEventListener());
         environment.addServletListeners(new GrailsContextLoaderListener());
         
         environment.addServlet(GroovyPagesServlet.class, "*.gsp");

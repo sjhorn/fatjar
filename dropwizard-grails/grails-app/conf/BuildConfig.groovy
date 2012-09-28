@@ -41,7 +41,7 @@ grails.project.dependency.resolution = {
 
         // runtime 'mysql:mysql-connector-java:5.1.20'
 
-        compile("com.yammer.dropwizard:dropwizard-core:0.5.1_wotif") {
+        compile("com.yammer.dropwizard:dropwizard-core:0.5.1") {
             excludes 'javax.servlet'
         }
         

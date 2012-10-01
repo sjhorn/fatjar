@@ -1,6 +1,7 @@
 package go;
 
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.codehaus.groovy.grails.web.context.GrailsContextLoaderListener;
@@ -12,6 +13,7 @@ import org.codehaus.groovy.grails.web.servlet.GrailsDispatcherServlet;
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequestFilter;
 import org.codehaus.groovy.grails.web.sitemesh.GrailsPageFilter;
 import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.util.resource.Resource;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
 import com.yammer.dropwizard.Service;
@@ -33,6 +35,12 @@ public class Go extends Service<GoConfiguration> {
     @Override
     protected void initialize(GoConfiguration configuration,
                               Environment environment) throws ClassNotFoundException {
+        try {
+            environment.setBaseResource(Resource.newResource(".webapp"));
+        } catch(IOException ioe) {
+            
+        }
+        environment.setProtectedTargets(new String[] { "/web-inf", "/meta-inf"} );
         
         environment.addServlet(DefaultServlet.class, "/");
         environment

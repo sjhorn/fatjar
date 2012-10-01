@@ -13,10 +13,14 @@
  *******************************************************************************/
 package org.eclipse.jdt.internal.jarinjarloader;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -24,7 +28,9 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
 /**
  * This class will be compiled into the binary jar-in-jar-loader.zip. This ZIP is used for the
@@ -33,46 +39,109 @@ import java.util.jar.Manifest;
  * @since 3.5
  */
 public class JarRsrcLoader {
- 
     private static class ManifestInfo {
         String rsrcMainClass;
         String[] rsrcClassPath;
     }
     
     public static void main(String[] args) throws ClassNotFoundException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException, IOException {
+        URL jarPath = JarRsrcLoader.class.getProtectionDomain().getCodeSource().getLocation();
         ManifestInfo mi = getManifestInfo();
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         URL.setURLStreamHandlerFactory(new RsrcURLStreamHandlerFactory(cl));
-        URL[] rsrcUrls = new URL[mi.rsrcClassPath.length];
+        URL[] rsrcUrls = new URL[mi.rsrcClassPath.length+1];
+        rsrcUrls[0] = expandWar(jarPath);
         for (int i = 0; i < mi.rsrcClassPath.length; i++) {
             String rsrcPath = mi.rsrcClassPath[i];
             if (rsrcPath.endsWith(JIJConstants.PATH_SEPARATOR)) 
-                rsrcUrls[i] = new URL(JIJConstants.INTERNAL_URL_PROTOCOL_WITH_COLON + rsrcPath); 
+                rsrcUrls[i+1] = new URL(JIJConstants.INTERNAL_URL_PROTOCOL_WITH_COLON + rsrcPath); 
             else
-                rsrcUrls[i] = new URL(JIJConstants.JAR_INTERNAL_URL_PROTOCOL_WITH_COLON + rsrcPath + JIJConstants.JAR_INTERNAL_SEPARATOR);    
+                rsrcUrls[i+1] = new URL(JIJConstants.JAR_INTERNAL_URL_PROTOCOL_WITH_COLON + rsrcPath + JIJConstants.JAR_INTERNAL_SEPARATOR);    
         }
-        ClassLoader jceClassLoader = new URLClassLoader(rsrcUrls, null) {
-            @Override
-            public URL getResource(String name) {
-                URL url = super.getResource(name);
-                if (url == null && name.startsWith("/")) {
-                    System.out.println("Hacking leading slash");
-                    url = this.findResource("rsrc:"+name.substring(1));
-                }
-                return url;
-            }
-        };
-        System.out.println(">>>>>>>>>>>>"+jceClassLoader.hashCode());
         
+        System.out.println("Added classpath "+ rsrcUrls[0]);
+        
+        ClassLoader jceClassLoader = new URLClassLoader(rsrcUrls, null);
         
         Thread.currentThread().setContextClassLoader(jceClassLoader);
-        Class c = Class.forName(mi.rsrcMainClass, true, jceClassLoader);
+        Class<?> c = Class.forName(mi.rsrcMainClass, true, jceClassLoader);
+        /*
+        try {
+            URL jarURL = new URL("jar:" + jarPath.toString() + "!/");
+            c.getField("base").set(null, jarURL);
+        } catch (NoSuchFieldException e) {
+            System.out.println("No such field");
+        }
+        */
         Method main = c.getMethod(JIJConstants.MAIN_METHOD_NAME, new Class[]{args.getClass()}); 
         main.invoke((Object)null, new Object[]{args});
     }
+    
+    public static void delete(File f) throws IOException {
+        if (f.isDirectory()) {
+            for (File c : f.listFiles()) {
+                delete(c);
+            }
+        } else {
+            f.delete();
+        }
+    }
+    
+    private static URL expandWar(URL jarPath) {
+        System.out.println("Expanding "+jarPath);
+        byte[] BUFFER = new byte[4 * 1024 * 1024];
+        File webapp = new File(".webapp/");
+        
+        InputStream is = null;
+        JarInputStream jarIs = null;
+        try {
+            delete(webapp);
+            webapp.mkdirs();
+            is = jarPath.openStream();
+            jarIs = new JarInputStream(is);
+            ZipEntry jarEntry;
+            
+            while( (jarEntry = jarIs.getNextEntry() ) != null ) {
+                String name = jarEntry.getName();
+                //System.out.println("Looking at "+name);
+                if( !name.endsWith(".jar") && !name.endsWith(".class") && 
+                    !name.startsWith("META-INF")  && !jarEntry.isDirectory()) {
+                    
+                    // Ensure directory exists
+                    if(name.contains("/")) {
+                        File dir = new File(webapp, name.substring(0, name.lastIndexOf("/")));
+                        //System.out.println("Attempting to make "+  dir);
+                        dir.mkdirs();
+                    }
+                    
+                    FileOutputStream fos = new FileOutputStream(new File(webapp, name));
+                    BufferedOutputStream bos = new BufferedOutputStream(fos);
+                    int bytesRead = 0;
+                    while (-1 != (bytesRead = jarIs.read(BUFFER))) {
+                        bos.write(BUFFER, 0, bytesRead);
+                    }
+                    bos.close();
+                    fos.close();
+                }
+            }
+            
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try { jarIs.close(); } catch (IOException e) { }
+            try { is.close(); } catch (IOException e) { }
+        }
+        
+        try {
+            return webapp.toURI().toURL();
+        } catch (MalformedURLException e) {
+            return null;
+        }
+    }
 
     private static ManifestInfo getManifestInfo() throws IOException {
-        Enumeration resEnum;
+        Enumeration<URL> resEnum;
         resEnum = Thread.currentThread().getContextClassLoader().getResources(JarFile.MANIFEST_NAME); 
         while (resEnum.hasMoreElements()) {
             try {
@@ -109,7 +178,7 @@ public class JarRsrcLoader {
     private static String[] splitSpaces(String line) {
         if (line == null) 
             return null;
-        List result = new ArrayList();
+        List<String> result = new ArrayList<String>();
         int firstPos = 0;
         while (firstPos < line.length()) {
             int lastPos = line.indexOf(' ', firstPos);

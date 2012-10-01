@@ -1,0 +1,15 @@
+<grails>
+  <resources>
+    <resource>ApplicationResources</resource>
+    <resource>BootStrap</resource>
+    <resource>BuildConfig</resource>
+    <resource>Config</resource>
+    <resource>DataSource</resource>
+    <resource>resources</resource>
+    <resource>UrlMappings</resource>
+    <resource>dropwizard.grails.HelloController</resource>
+  </resources>
+  <plugins>
+    <plugin>HibernateGrailsPlugin</plugin>
+  </plugins>
+</grails>

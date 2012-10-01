@@ -4,9 +4,9 @@ import java.security.ProtectionDomain
 
 import javax.servlet.DispatcherType
 import javax.servlet.http.HttpServlet
-import javax.tools.JavaFileManager.Location
 
 import org.codehaus.groovy.runtime.StackTraceUtils
+import org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader
 import org.eclipse.jetty.server.Handler
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler
@@ -21,12 +21,9 @@ import org.eclipse.jetty.servlet.ServletContextHandler.TagLib
 import org.eclipse.jetty.util.resource.Resource
 import org.eclipse.jetty.webapp.WebAppClassLoader
 import org.eclipse.jetty.webapp.WebAppContext
-import org.slf4j.LoggerFactory
-
-import ch.qos.logback.classic.Logger
 
 class SimpleJetty extends HttpServlet {
-    
+    public static URL base
     static void addFilter(ServletContextHandler handler, String name, String className, Map initParams = null) {
         FilterHolder holder = handler.getServletHandler().newFilterHolder(Holder.Source.DESCRIPTOR)
         holder.setName(name)
@@ -95,8 +92,8 @@ class SimpleJetty extends HttpServlet {
 
     static main(args) {
         try {
-            Logger logger = LoggerFactory.getLogger(SimpleJetty)
-            logger.info("Hello world.")
+            //Logger logger = LoggerFactory.getLogger(SimpleJetty)
+            //logger.info("Hello world.")
         
             
             
@@ -108,7 +105,7 @@ class SimpleJetty extends HttpServlet {
                 //WebAppContext 
                 webapp = new WebAppContext()
                 webapp.setContextPath("/")
-                webapp.setWar("./target/out")
+                webapp.setWar("./target/war")
             } else {
                 
                 def woot = {
@@ -139,15 +136,19 @@ class SimpleJetty extends HttpServlet {
                 webapp = new ServletContextHandler(ServletContextHandler.SESSIONS | ServletContextHandler.SECURITY)
                 webapp.setErrorHandler(new ErrorPageErrorHandler())
                 webapp.setContextPath("/")
-                
+                webapp.setProtectedTargets(["/web-inf", "/meta-inf"] as String[])
                 
                 addServlet(webapp, "default", "org.eclipse.jetty.servlet.DefaultServlet")
                 addServletMapping(webapp, "default", "/")
                 
-                ProtectionDomain domain = Test.class.getProtectionDomain();
-                URL location = domain.getCodeSource().getLocation();
+                //ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                //URL.setURLStreamHandlerFactory(new RsrcURLStreamHandlerFactory(cl));
                 
-                webapp.setResourceBase(Location.toString())
+                //webapp.setClassLoader(Thread.currentThread().getContextClassLoader())
+                //URL location = new URL("jar:file:target/dropwizard-grails-0.1.jar!/")
+                def res =  Resource.newResource(".webapp")//Resource.newClassPathResource(".")
+                println "Res is "+res
+                webapp.setBaseResource(res)
                 //webapp.setResourceBase("rsrc:WEB-INF")
                 //webapp.setBaseResource(Resource.newResource(new File("target/out").absolutePath))
                 //webapp.setResourceBase(Resource.newResource("./target/out").getFile().getAbsolutePath())

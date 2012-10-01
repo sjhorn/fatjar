@@ -42,9 +42,10 @@ target(fatjar: "Create and run fatjar") {
         def mainAttributes = manifest.mainAttributes
         [
             'Manifest-Version' : '1.0',
-            'Rsrc-Main-Class' : 'go.Test',
+            'Rsrc-Main-Class' : 'go.Go',
             'Main-Class' : 'org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader',
-            'Grails-Version' : '2.1.1'
+            'Grails-Version' : '2.1.1',
+            'Class-Path' : '.'
         ].each { k,v ->
             mainAttributes.putValue(k, v)
         }
@@ -59,7 +60,11 @@ target(fatjar: "Create and run fatjar") {
         
         Map entries = [:]
         def addEntry = { File file, String name = null ->
-            JarEntry jarEntry = new JarEntry(name ?: file.name)
+            name = name ?: file.name
+            if(file.isDirectory() && name[-1] != '/') {
+                name += '/'
+            }
+            JarEntry jarEntry = new JarEntry(name)
             if(!entries[jarEntry.name]) {
                 jarEntry.setTime(file.lastModified())
                 jar.putNextEntry(jarEntry)
@@ -95,7 +100,7 @@ target(fatjar: "Create and run fatjar") {
                         services[name].add(serviceItems)
                     }
                 } else if( !name.startsWith("WEB-INF/lib") && !name.startsWith("WEB-INF/classes") ) {
-                    addEntry(file, name)    
+                    addEntry(file, name)
                 }
             }
             services.each { name, contents ->
